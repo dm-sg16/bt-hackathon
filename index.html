@@ -38,7 +38,6 @@
     .screen { display: none; width: 100%; max-width: 680px; flex-direction: column; gap: 14px; }
     .screen.active { display: flex; }
 
-    /* ── Setup ── */
     .setup-header { text-align: center; padding: 8px 0 4px; }
     .setup-header h1 { font-size: 1.6rem; font-weight: 700; }
     .setup-header p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
@@ -93,7 +92,6 @@
     }
     .btn-start:hover { filter: brightness(1.12); }
 
-    /* ── Judging ── */
     .top-bar {
       display: flex;
       align-items: center;
@@ -156,7 +154,6 @@
     .team-badge .name { font-size: 1.9rem; font-weight: 700; line-height: 1.15; }
     .team-badge .counter { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
 
-    /* Criteria cards */
     .criterion {
       background: var(--surface);
       border-radius: var(--radius);
@@ -220,7 +217,6 @@
       padding: 13px 16px;
     }
 
-    .score-summary { }
     .score-summary .label { font-size: 0.75rem; color: var(--muted); }
     .score-summary .value { font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
 
@@ -254,7 +250,6 @@
     }
     .btn-next:hover { filter: brightness(1.1); }
 
-    /* ── Summary ── */
     .summary-header { text-align: center; }
     .summary-header h1 { font-size: 1.5rem; font-weight: 700; }
     .summary-header p  { color: var(--muted); font-size: 0.85rem; margin-top: 3px; }
@@ -319,21 +314,16 @@
 </head>
 <body>
 
-<!-- ══ SETUP ══ -->
 <div class="screen active" id="screen-setup">
   <div class="setup-header">
     <h1>BT Hackathon 2026</h1>
     <p>Enter team names in presentation order, then start judging.</p>
   </div>
-
   <div class="teams-grid" id="teams-grid"></div>
-
   <button class="btn-start" onclick="startJudging()">Start Judging →</button>
 </div>
 
-<!-- ══ JUDGING ══ -->
 <div class="screen" id="screen-judging">
-
   <div class="top-bar">
     <div class="timer-block">
       <div class="timer-digits" id="timer-digits">6:00</div>
@@ -347,18 +337,14 @@
       </div>
     </div>
   </div>
-
   <div class="team-badge">
     <div class="name" id="team-name"></div>
     <div class="counter" id="team-counter"></div>
   </div>
-
   <div id="criteria-container"></div>
-
   <div class="notes-wrap">
     <textarea id="notes" rows="2" placeholder="Notes (optional)…" oninput="saveNotes()"></textarea>
   </div>
-
   <div class="bottom-bar">
     <div class="score-summary">
       <div class="label">Score</div>
@@ -372,7 +358,6 @@
   </div>
 </div>
 
-<!-- ══ SUMMARY ══ -->
 <div class="screen" id="screen-summary">
   <div class="summary-header">
     <h1>Results</h1>
@@ -387,55 +372,16 @@
 
 <script>
 const CRITERIA = [
-  {
-    id: 'execution',
-    label: 'Execution',
-    range: '0 – 4',
-    values:   [0, 1, 2, 3, 4],
-    displays: ['0', '1', '2', '3', '4'],
-  },
-  {
-    id: 'difficulty',
-    label: 'Level of Difficulty',
-    range: '0 – 4',
-    values:   [0, 1, 2, 3, 4],
-    displays: ['0', '1', '2', '3', '4'],
-  },
-  {
-    id: 'ai',
-    label: 'AI Proficiency',
-    range: '0 to −2',
-    values:   [0, -1, -2],
-    displays: ['0', '−1', '−2'],
-  },
-  {
-    id: 'ambition',
-    label: 'Ambition',
-    range: '0 to +2',
-    values:   [0, 1, 2],
-    displays: ['0', '+1', '+2'],
-  },
-  {
-    id: 'presentation',
-    label: 'Presentation',
-    range: '0 to +1',
-    values:   [0, 1],
-    displays: ['0', '+1'],
-  },
+  { id: 'execution',    label: 'Execution',          range: '0 – 4',    values: [0,1,2,3,4], displays: ['0','1','2','3','4'] },
+  { id: 'difficulty',  label: 'Level of Difficulty', range: '0 – 4',    values: [0,1,2,3,4], displays: ['0','1','2','3','4'] },
+  { id: 'ai',          label: 'AI Proficiency',      range: '0 to −2', values: [0,-1,-2],   displays: ['0','−1','−2'] },
+  { id: 'ambition',    label: 'Ambition',             range: '0 to +2',  values: [0,1,2],     displays: ['0','+1','+2'] },
+  { id: 'presentation',label: 'Presentation',         range: '0 to +1',  values: [0,1],       displays: ['0','+1'] },
 ];
 
-const DURATION = 360; // 6 minutes
+const DURATION = 360;
 
-const st = {
-  teams:    [],
-  scores:   [],
-  idx:      0,
-  timeLeft: DURATION,
-  running:  false,
-  iv:       null,
-};
-
-// ── Setup ────────────────────────────────────────────────────────────────────
+const st = { teams: [], scores: [], idx: 0, timeLeft: DURATION, running: false, iv: null };
 
 function initSetup() {
   const grid = document.getElementById('teams-grid');
@@ -443,8 +389,7 @@ function initSetup() {
   for (let i = 1; i <= 8; i++) {
     const row = document.createElement('div');
     row.className = 'team-row';
-    row.innerHTML = `<span class="team-num">${i}</span>
-      <input type="text" id="ti-${i}" placeholder="Team ${i}" autocomplete="off">`;
+    row.innerHTML = `<span class="team-num">${i}</span><input type="text" id="ti-${i}" placeholder="Team ${i}" autocomplete="off">`;
     grid.appendChild(row);
   }
 }
@@ -455,70 +400,47 @@ function startJudging() {
     const v = document.getElementById(`ti-${i}`).value.trim();
     st.teams.push(v || `Team ${i}`);
   }
-  st.scores = st.teams.map(() =>
-    ({ execution: null, difficulty: null, ai: null, ambition: null, presentation: null, notes: '' })
-  );
+  st.scores = st.teams.map(() => ({ execution: null, difficulty: null, ai: null, ambition: null, presentation: null, notes: '' }));
   st.idx = 0;
   show('screen-judging');
   renderJudging();
   resetTimer();
 }
 
-// ── Judging ──────────────────────────────────────────────────────────────────
-
 function renderJudging() {
   const { idx, teams, scores } = st;
   const s = scores[idx];
-
   document.getElementById('team-name').textContent    = teams[idx];
   document.getElementById('team-counter').textContent = `Team ${idx + 1} of ${teams.length}`;
   document.getElementById('btn-next').textContent     = idx === teams.length - 1 ? 'Finish ✓' : 'Next →';
   document.getElementById('btn-back').style.display   = idx === 0 ? 'none' : '';
-
   const container = document.getElementById('criteria-container');
   container.innerHTML = '';
-
   CRITERIA.forEach(c => {
     const card = document.createElement('div');
     card.className = `criterion${s[c.id] !== null ? ' scored' : ''}`;
-
     const btns = c.values.map((v, bi) => {
       let cls = 'score-btn';
       if (s[c.id] === v) cls += v > 0 ? ' sel-pos' : v < 0 ? ' sel-neg' : ' sel-zero';
       return `<button class="${cls}" onclick="setScore('${c.id}',${v})">${c.displays[bi]}</button>`;
     }).join('');
-
-    card.innerHTML = `
-      <div class="crit-header">
-        <span class="crit-name">${c.label}</span>
-        <span class="crit-range">${c.range}</span>
-      </div>
-      <div class="score-row">${btns}</div>`;
+    card.innerHTML = `<div class="crit-header"><span class="crit-name">${c.label}</span><span class="crit-range">${c.range}</span></div><div class="score-row">${btns}</div>`;
     container.appendChild(card);
   });
-
   document.getElementById('notes').value = s.notes;
   refreshTotal();
 }
 
-function setScore(id, v) {
-  st.scores[st.idx][id] = v;
-  renderJudging();
-}
-
-function saveNotes() {
-  st.scores[st.idx].notes = document.getElementById('notes').value;
-}
+function setScore(id, v) { st.scores[st.idx][id] = v; renderJudging(); }
+function saveNotes() { st.scores[st.idx].notes = document.getElementById('notes').value; }
 
 function refreshTotal() {
   const s = st.scores[st.idx];
   const vals = CRITERIA.map(c => s[c.id]);
   const incomplete = vals.some(v => v === null);
   const el = document.getElementById('score-total');
-  if (incomplete) {
-    el.textContent = '—';
-    el.style.color = '';
-  } else {
+  if (incomplete) { el.textContent = '—'; el.style.color = ''; }
+  else {
     const total = vals.reduce((a, b) => a + b, 0);
     el.textContent = total;
     el.style.color = total >= 8 ? 'var(--success)' : total < 4 ? 'var(--danger)' : 'var(--accent)';
@@ -535,118 +457,54 @@ function nextTeam() {
     return;
   }
   stopTimer();
-  if (st.idx === st.teams.length - 1) {
-    showSummary();
-  } else {
-    st.idx++;
-    renderJudging();
-    resetTimer();
-  }
+  if (st.idx === st.teams.length - 1) { showSummary(); }
+  else { st.idx++; renderJudging(); resetTimer(); }
 }
 
 function prevTeam() {
   if (st.idx === 0) return;
-  saveNotes();
-  stopTimer();
-  st.idx--;
-  renderJudging();
-  resetTimer();
+  saveNotes(); stopTimer(); st.idx--; renderJudging(); resetTimer();
 }
 
-// ── Timer ────────────────────────────────────────────────────────────────────
-
 function startTimer() {
-  clearInterval(st.iv);
-  st.running = true;
+  clearInterval(st.iv); st.running = true;
   document.getElementById('btn-pause').textContent = 'Pause';
-  st.iv = setInterval(() => {
-    if (st.timeLeft > 0) {
-      st.timeLeft--;
-      tickDisplay();
-    } else {
-      stopTimer();
-    }
-  }, 1000);
+  st.iv = setInterval(() => { if (st.timeLeft > 0) { st.timeLeft--; tickDisplay(); } else { stopTimer(); } }, 1000);
 }
 
 function stopTimer() {
-  clearInterval(st.iv);
-  st.running = false;
+  clearInterval(st.iv); st.running = false;
   document.getElementById('btn-pause').textContent = 'Resume';
 }
 
-function toggleTimer() {
-  st.running ? stopTimer() : startTimer();
-}
+function toggleTimer() { st.running ? stopTimer() : startTimer(); }
 
-function resetTimer() {
-  stopTimer();
-  st.timeLeft = DURATION;
-  tickDisplay();
-  startTimer();
-}
+function resetTimer() { stopTimer(); st.timeLeft = DURATION; tickDisplay(); startTimer(); }
 
 function tickDisplay() {
   const m = Math.floor(st.timeLeft / 60);
   const s = st.timeLeft % 60;
   const el = document.getElementById('timer-digits');
   el.textContent = `${m}:${String(s).padStart(2, '0')}`;
-  el.className = 'timer-digits' +
-    (st.timeLeft <= 60 ? ' crit' : st.timeLeft <= 120 ? ' warn' : '');
-
+  el.className = 'timer-digits' + (st.timeLeft <= 60 ? ' crit' : st.timeLeft <= 120 ? ' warn' : '');
   const pct = (st.timeLeft / DURATION) * 100;
   const fill = document.getElementById('progress-fill');
   fill.style.width = pct + '%';
-  fill.style.background = st.timeLeft <= 60 ? 'var(--danger)'
-    : st.timeLeft <= 120 ? 'var(--warning)' : 'var(--accent)';
+  fill.style.background = st.timeLeft <= 60 ? 'var(--danger)' : st.timeLeft <= 120 ? 'var(--warning)' : 'var(--accent)';
 }
-
-// ── Summary ──────────────────────────────────────────────────────────────────
 
 function showSummary() {
   show('screen-summary');
   const { teams, scores } = st;
-
-  const totals = scores.map(s =>
-    CRITERIA.reduce((sum, c) => sum + (s[c.id] ?? 0), 0)
-  );
+  const totals = scores.map(s => CRITERIA.reduce((sum, c) => sum + (s[c.id] ?? 0), 0));
   const maxTotal = Math.max(...totals);
-
-  let html = `<table>
-    <thead><tr>
-      <th>Team</th>
-      <th>Exec</th>
-      <th>Diff</th>
-      <th>AI Prof</th>
-      <th>Ambition</th>
-      <th>Pres</th>
-      <th>Total</th>
-    </tr></thead>
-    <tbody>`;
-
+  let html = `<table><thead><tr><th>Team</th><th>Exec</th><th>Diff</th><th>AI Prof</th><th>Ambition</th><th>Pres</th><th>Total</th></tr></thead><tbody>`;
   teams.forEach((name, i) => {
-    const s = scores[i];
-    const total = totals[i];
-    const fmt = (v, id) => {
-      if (v === null) return '—';
-      if (id === 'ai' && v < 0) return v;
-      if ((id === 'ambition' || id === 'presentation') && v > 0) return `+${v}`;
-      return v;
-    };
-    html += `<tr${total === maxTotal ? ' class="top-score"' : ''}>
-      <td>${name}</td>
-      <td>${fmt(s.execution,   'execution')}</td>
-      <td>${fmt(s.difficulty,  'difficulty')}</td>
-      <td>${fmt(s.ai,          'ai')}</td>
-      <td>${fmt(s.ambition,    'ambition')}</td>
-      <td>${fmt(s.presentation,'presentation')}</td>
-      <td class="total-cell">${total}</td>
-    </tr>`;
-    if (s.notes.trim()) {
-      html += `<tr class="notes-row"><td colspan="7">Notes: ${escHtml(s.notes.trim())}</td></tr>`;
-    }
+    const s = scores[i]; const total = totals[i];
+    const fmt = (v, id) => { if (v === null) return '—'; if (id === 'ai' && v < 0) return v; if ((id === 'ambition' || id === 'presentation') && v > 0) return `+${v}`; return v; };
+    html += `<tr${total === maxTotal ? ' class="top-score"' : ''}><td>${name}</td><td>${fmt(s.execution,'execution')}</td><td>${fmt(s.difficulty,'difficulty')}</td><td>${fmt(s.ai,'ai')}</td><td>${fmt(s.ambition,'ambition')}</td><td>${fmt(s.presentation,'presentation')}</td><td class="total-cell">${total}</td></tr>`;
+    if (s.notes.trim()) html += `<tr class="notes-row"><td colspan="7">Notes: ${escHtml(s.notes.trim())}</td></tr>`;
   });
-
   html += '</tbody></table>';
   document.getElementById('summary-table').innerHTML = html;
 }
@@ -654,13 +512,9 @@ function showSummary() {
 function copyResults() {
   const { teams, scores } = st;
   const totals = scores.map(s => CRITERIA.reduce((sum, c) => sum + (s[c.id] ?? 0), 0));
-  const header = ['Team', 'Execution', 'Difficulty', 'AI Prof', 'Ambition', 'Presentation', 'Total'];
-  const rows = teams.map((name, i) => {
-    const s = scores[i];
-    return [name, s.execution, s.difficulty, s.ai, s.ambition, s.presentation, totals[i]].join('\t');
-  });
-  const text = [header.join('\t'), ...rows].join('\n');
-  navigator.clipboard.writeText(text).then(() => {
+  const header = ['Team','Execution','Difficulty','AI Prof','Ambition','Presentation','Total'];
+  const rows = teams.map((name, i) => { const s = scores[i]; return [name,s.execution,s.difficulty,s.ai,s.ambition,s.presentation,totals[i]].join('\t'); });
+  navigator.clipboard.writeText([header.join('\t'),...rows].join('\n')).then(() => {
     const btn = document.querySelector('.btn-copy');
     btn.textContent = 'Copied!';
     setTimeout(() => btn.textContent = 'Copy Results to Clipboard', 2000);
@@ -673,16 +527,12 @@ function restart() {
   show('screen-setup');
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function show(id) {
   document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 initSetup();
 </script>
