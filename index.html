@@ -309,6 +309,39 @@
     }
     .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
 
+    .resume-banner {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .resume-banner p { font-size: 0.9rem; color: var(--text); }
+    .resume-banner p span { color: var(--accent); font-weight: 600; }
+    .resume-btns { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-resume {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-discard {
+      background: none;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
     @media (max-width: 500px) {
       .teams-grid { grid-template-columns: 1fr; }
       .timer-digits { font-size: 1.8rem; }
@@ -325,7 +358,13 @@
     <h1>BT Hackathon 2026</h1>
     <p>Enter team names in presentation order, then start judging.</p>
   </div>
-
+  <div class="resume-banner" id="resume-banner" style="display:none">
+    <p>Session saved: <span id="resume-label"></span></p>
+    <div class="resume-btns">
+      <button class="btn-resume" onclick="resumeSession()">Resume</button>
+      <button class="btn-discard" onclick="discardSession()">Discard</button>
+    </div>
+  </div>
   <div class="teams-grid" id="teams-grid"></div>
 
   <button class="btn-start" onclick="startJudging()">Start Judging →</button>
@@ -426,6 +465,7 @@ const CRITERIA = [
 ];
 
 const DURATION = 360; // 6 minutes
+const STORAGE_KEY = 'bt-hackathon-2026';
 
 const st = {
   teams:    [],
@@ -435,6 +475,16 @@ const st = {
   running:  false,
   iv:       null,
 };
+
+function persist() {
+  const { teams, scores, idx } = st;
+  const phase = document.querySelector('.screen.active')?.id ?? 'screen-setup';
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ teams, scores, idx, phase }));
+}
+
+function clearPersisted() {
+  localStorage.removeItem(STORAGE_KEY);
+}
 
 // ── Setup ────────────────────────────────────────────────────────────────────
 
@@ -448,6 +498,41 @@ function initSetup() {
       <input type="text" id="ti-${i}" placeholder="Team ${i}" autocomplete="off">`;
     grid.appendChild(row);
   }
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved?.teams?.length) {
+      saved.teams.forEach((name, i) => {
+        const el = document.getElementById(`ti-${i + 1}`);
+        if (el) el.value = name;
+      });
+      const scored = saved.scores.filter(s => Object.values(s).some(v => v !== null && v !== '')).length;
+      document.getElementById('resume-label').textContent =
+        `${saved.teams[saved.idx] || `Team ${saved.idx + 1}`} — ${scored} of ${saved.teams.length} teams scored`;
+      document.getElementById('resume-banner').style.display = 'flex';
+    }
+  } catch { /* ignore corrupt data */ }
+}
+
+function resumeSession() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (!saved?.teams?.length) return;
+    Object.assign(st, { teams: saved.teams, scores: saved.scores, idx: saved.idx });
+    if (saved.phase === 'screen-summary') {
+      show('screen-summary');
+      showSummary();
+    } else {
+      show('screen-judging');
+      renderJudging();
+      resetTimer();
+    }
+  } catch { discardSession(); }
+}
+
+function discardSession() {
+  clearPersisted();
+  document.getElementById('resume-banner').style.display = 'none';
 }
 
 function startJudging() {
@@ -463,6 +548,7 @@ function startJudging() {
   show('screen-judging');
   renderJudging();
   resetTimer();
+  persist();
 }
 
 // ── Judging ──────────────────────────────────────────────────────────────────
@@ -505,10 +591,12 @@ function renderJudging() {
 function setScore(id, v) {
   st.scores[st.idx][id] = v;
   renderJudging();
+  persist();
 }
 
 function saveNotes() {
   st.scores[st.idx].notes = document.getElementById('notes').value;
+  persist();
 }
 
 function refreshTotal() {
@@ -538,10 +626,12 @@ function nextTeam() {
   stopTimer();
   if (st.idx === st.teams.length - 1) {
     showSummary();
+    persist();
   } else {
     st.idx++;
     renderJudging();
     resetTimer();
+    persist();
   }
 }
 
@@ -552,6 +642,7 @@ function prevTeam() {
   st.idx--;
   renderJudging();
   resetTimer();
+  persist();
 }
 
 // ── Timer ────────────────────────────────────────────────────────────────────
@@ -691,8 +782,10 @@ function copyResults() {
 
 function restart() {
   stopTimer();
+  clearPersisted();
   Object.assign(st, { teams: [], scores: [], idx: 0, timeLeft: DURATION, running: false, iv: null });
   show('screen-setup');
+  initSetup();
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
