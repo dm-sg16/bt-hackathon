@@ -352,6 +352,7 @@
     </div>
     <div class="nav-btns">
       <span class="warn-msg" id="warn-msg" style="display:none">Score all fields</span>
+      <button class="ctrl-btn" id="btn-copy-progress" onclick="copyProgress()" title="Copy all scores so far">Copy</button>
       <button class="btn-back" id="btn-back" onclick="prevTeam()">← Back</button>
       <button class="btn-next" id="btn-next" onclick="nextTeam()">Next →</button>
     </div>
@@ -380,7 +381,6 @@ const CRITERIA = [
 ];
 
 const DURATION = 360;
-
 const st = { teams: [], scores: [], idx: 0, timeLeft: DURATION, running: false, iv: null };
 
 function initSetup() {
@@ -478,7 +478,6 @@ function stopTimer() {
 }
 
 function toggleTimer() { st.running ? stopTimer() : startTimer(); }
-
 function resetTimer() { stopTimer(); st.timeLeft = DURATION; tickDisplay(); startTimer(); }
 
 function tickDisplay() {
@@ -509,12 +508,34 @@ function showSummary() {
   document.getElementById('summary-table').innerHTML = html;
 }
 
-function copyResults() {
+function buildResultsText() {
   const { teams, scores } = st;
-  const totals = scores.map(s => CRITERIA.reduce((sum, c) => sum + (s[c.id] ?? 0), 0));
+  const fmt = (v, id) => {
+    if (v === null) return '—';
+    if (id === 'ai' && v < 0) return v;
+    if ((id === 'ambition' || id === 'presentation') && v > 0) return `+${v}`;
+    return v;
+  };
   const header = ['Team','Execution','Difficulty','AI Prof','Ambition','Presentation','Total'];
-  const rows = teams.map((name, i) => { const s = scores[i]; return [name,s.execution,s.difficulty,s.ai,s.ambition,s.presentation,totals[i]].join('\t'); });
-  navigator.clipboard.writeText([header.join('\t'),...rows].join('\n')).then(() => {
+  const rows = teams.map((name, i) => {
+    const s = scores[i];
+    const total = CRITERIA.every(c => s[c.id] !== null) ? CRITERIA.reduce((sum, c) => sum + s[c.id], 0) : '—';
+    return [name, fmt(s.execution,'execution'), fmt(s.difficulty,'difficulty'), fmt(s.ai,'ai'), fmt(s.ambition,'ambition'), fmt(s.presentation,'presentation'), total].join('\t');
+  });
+  return [header.join('\t'), ...rows].join('\n');
+}
+
+function copyProgress() {
+  saveNotes();
+  navigator.clipboard.writeText(buildResultsText()).then(() => {
+    const btn = document.getElementById('btn-copy-progress');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+function copyResults() {
+  navigator.clipboard.writeText(buildResultsText()).then(() => {
     const btn = document.querySelector('.btn-copy');
     btn.textContent = 'Copied!';
     setTimeout(() => btn.textContent = 'Copy Results to Clipboard', 2000);
