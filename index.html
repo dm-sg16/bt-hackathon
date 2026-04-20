@@ -309,6 +309,37 @@
     }
     .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
 
+    .setup-config {
+      display: flex;
+      gap: 10px;
+    }
+    .config-row {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+    }
+    .config-label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+    .config-stepper { display: flex; align-items: center; gap: 10px; }
+    .step-btn {
+      width: 28px; height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.12s;
+    }
+    .step-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .step-val { font-size: 1.1rem; font-weight: 700; min-width: 20px; text-align: center; }
+
     .resume-banner {
       background: var(--surface);
       border: 1px solid var(--accent);
@@ -365,8 +396,25 @@
       <button class="btn-discard" onclick="discardSession()">Discard</button>
     </div>
   </div>
+  <div class="setup-config">
+    <div class="config-row">
+      <label class="config-label" for="cfg-teams">Teams</label>
+      <div class="config-stepper">
+        <button class="step-btn" onclick="adjustTeams(-1)">−</button>
+        <span class="step-val" id="cfg-teams-val">8</span>
+        <button class="step-btn" onclick="adjustTeams(1)">+</button>
+      </div>
+    </div>
+    <div class="config-row">
+      <label class="config-label" for="cfg-timer">Minutes per team</label>
+      <div class="config-stepper">
+        <button class="step-btn" onclick="adjustTimer(-1)">−</button>
+        <span class="step-val" id="cfg-timer-val">6</span>
+        <button class="step-btn" onclick="adjustTimer(1)">+</button>
+      </div>
+    </div>
+  </div>
   <div class="teams-grid" id="teams-grid"></div>
-
   <button class="btn-start" onclick="startJudging()">Start Judging →</button>
 </div>
 
@@ -464,22 +512,50 @@ const CRITERIA = [
   },
 ];
 
-const DURATION = 360; // 6 minutes
 const STORAGE_KEY = 'bt-hackathon-2026';
+
+const cfg = { numTeams: 8, minutes: 6 };
+
+function duration() { return cfg.minutes * 60; }
 
 const st = {
   teams:    [],
   scores:   [],
   idx:      0,
-  timeLeft: DURATION,
+  timeLeft: duration(),
   running:  false,
   iv:       null,
 };
 
+function adjustTeams(delta) {
+  cfg.numTeams = Math.min(20, Math.max(1, cfg.numTeams + delta));
+  document.getElementById('cfg-teams-val').textContent = cfg.numTeams;
+  rebuildTeamInputs();
+}
+
+function adjustTimer(delta) {
+  cfg.minutes = Math.min(30, Math.max(1, cfg.minutes + delta));
+  document.getElementById('cfg-timer-val').textContent = cfg.minutes;
+}
+
+function rebuildTeamInputs() {
+  const grid = document.getElementById('teams-grid');
+  const existing = [...grid.querySelectorAll('input')].map(el => el.value);
+  grid.innerHTML = '';
+  for (let i = 1; i <= cfg.numTeams; i++) {
+    const row = document.createElement('div');
+    row.className = 'team-row';
+    row.innerHTML = `<span class="team-num">${i}</span>
+      <input type="text" id="ti-${i}" placeholder="Team ${i}" autocomplete="off">`;
+    grid.appendChild(row);
+    if (existing[i - 1]) document.getElementById(`ti-${i}`).value = existing[i - 1];
+  }
+}
+
 function persist() {
   const { teams, scores, idx } = st;
   const phase = document.querySelector('.screen.active')?.id ?? 'screen-setup';
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ teams, scores, idx, phase }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ teams, scores, idx, phase, cfg }));
 }
 
 function clearPersisted() {
@@ -489,19 +565,13 @@ function clearPersisted() {
 // ── Setup ────────────────────────────────────────────────────────────────────
 
 function initSetup() {
-  const grid = document.getElementById('teams-grid');
-  grid.innerHTML = '';
-  for (let i = 1; i <= 8; i++) {
-    const row = document.createElement('div');
-    row.className = 'team-row';
-    row.innerHTML = `<span class="team-num">${i}</span>
-      <input type="text" id="ti-${i}" placeholder="Team ${i}" autocomplete="off">`;
-    grid.appendChild(row);
-  }
-
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (saved?.teams?.length) {
+      if (saved.cfg) { Object.assign(cfg, saved.cfg); }
+      document.getElementById('cfg-teams-val').textContent = cfg.numTeams;
+      document.getElementById('cfg-timer-val').textContent = cfg.minutes;
+      rebuildTeamInputs();
       saved.teams.forEach((name, i) => {
         const el = document.getElementById(`ti-${i + 1}`);
         if (el) el.value = name;
@@ -510,15 +580,18 @@ function initSetup() {
       document.getElementById('resume-label').textContent =
         `${saved.teams[saved.idx] || `Team ${saved.idx + 1}`} — ${scored} of ${saved.teams.length} teams scored`;
       document.getElementById('resume-banner').style.display = 'flex';
+      return;
     }
   } catch { /* ignore corrupt data */ }
+  rebuildTeamInputs();
 }
 
 function resumeSession() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved?.teams?.length) return;
-    Object.assign(st, { teams: saved.teams, scores: saved.scores, idx: saved.idx });
+    if (saved.cfg) Object.assign(cfg, saved.cfg);
+    Object.assign(st, { teams: saved.teams, scores: saved.scores, idx: saved.idx, timeLeft: duration() });
     if (saved.phase === 'screen-summary') {
       show('screen-summary');
       showSummary();
@@ -537,7 +610,7 @@ function discardSession() {
 
 function startJudging() {
   st.teams = [];
-  for (let i = 1; i <= 8; i++) {
+  for (let i = 1; i <= cfg.numTeams; i++) {
     const v = document.getElementById(`ti-${i}`).value.trim();
     st.teams.push(v || `Team ${i}`);
   }
@@ -545,6 +618,7 @@ function startJudging() {
     ({ execution: null, difficulty: null, ai: null, ambition: null, presentation: null, notes: '' })
   );
   st.idx = 0;
+  st.timeLeft = duration();
   show('screen-judging');
   renderJudging();
   resetTimer();
@@ -673,7 +747,7 @@ function toggleTimer() {
 
 function resetTimer() {
   stopTimer();
-  st.timeLeft = DURATION;
+  st.timeLeft = duration();
   tickDisplay();
   startTimer();
 }
@@ -686,7 +760,7 @@ function tickDisplay() {
   el.className = 'timer-digits' +
     (st.timeLeft <= 60 ? ' crit' : st.timeLeft <= 120 ? ' warn' : '');
 
-  const pct = (st.timeLeft / DURATION) * 100;
+  const pct = (st.timeLeft / duration()) * 100;
   const fill = document.getElementById('progress-fill');
   fill.style.width = pct + '%';
   fill.style.background = st.timeLeft <= 60 ? 'var(--danger)'
