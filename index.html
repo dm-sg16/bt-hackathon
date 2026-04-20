@@ -221,7 +221,6 @@
     .score-summary .value { font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
 
     .nav-btns { display: flex; gap: 8px; align-items: center; }
-
     .warn-msg { font-size: 0.8rem; color: var(--warning); }
 
     .btn-back {
@@ -304,6 +303,70 @@
     }
     .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
 
+    .setup-config {
+      display: flex;
+      gap: 10px;
+    }
+    .config-row {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+    }
+    .config-label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+    .config-stepper { display: flex; align-items: center; gap: 10px; }
+    .step-btn {
+      width: 28px; height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.12s;
+    }
+    .step-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .step-val { font-size: 1.1rem; font-weight: 700; min-width: 20px; text-align: center; }
+
+    .resume-banner {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .resume-banner p { font-size: 0.9rem; color: var(--text); }
+    .resume-banner p span { color: var(--accent); font-weight: 600; }
+    .resume-btns { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-resume {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-discard {
+      background: none;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
     @media (max-width: 500px) {
       .teams-grid { grid-template-columns: 1fr; }
       .timer-digits { font-size: 1.8rem; }
@@ -318,6 +381,31 @@
   <div class="setup-header">
     <h1>BT Hackathon 2026</h1>
     <p>Enter team names in presentation order, then start judging.</p>
+  </div>
+  <div class="resume-banner" id="resume-banner" style="display:none">
+    <p>Session saved: <span id="resume-label"></span></p>
+    <div class="resume-btns">
+      <button class="btn-resume" onclick="resumeSession()">Resume</button>
+      <button class="btn-discard" onclick="discardSession()">Discard</button>
+    </div>
+  </div>
+  <div class="setup-config">
+    <div class="config-row">
+      <label class="config-label">Teams</label>
+      <div class="config-stepper">
+        <button class="step-btn" onclick="adjustTeams(-1)">−</button>
+        <span class="step-val" id="cfg-teams-val">8</span>
+        <button class="step-btn" onclick="adjustTeams(1)">+</button>
+      </div>
+    </div>
+    <div class="config-row">
+      <label class="config-label">Minutes per team</label>
+      <div class="config-stepper">
+        <button class="step-btn" onclick="adjustTimer(-1)">−</button>
+        <span class="step-val" id="cfg-timer-val">6</span>
+        <button class="step-btn" onclick="adjustTimer(1)">+</button>
+      </div>
+    </div>
   </div>
   <div class="teams-grid" id="teams-grid"></div>
   <button class="btn-start" onclick="startJudging()">Start Judging →</button>
@@ -380,39 +468,100 @@ const CRITERIA = [
   { id: 'presentation',label: 'Presentation',         range: '0 to +1',  values: [0,1],       displays: ['0','+1'] },
 ];
 
-const DURATION = 360;
-const st = { teams: [], scores: [], idx: 0, timeLeft: DURATION, running: false, iv: null };
+const STORAGE_KEY = 'bt-hackathon-2026';
+const cfg = { numTeams: 8, minutes: 6 };
+function duration() { return cfg.minutes * 60; }
 
-function initSetup() {
+const st = { teams: [], scores: [], idx: 0, timeLeft: duration(), running: false, iv: null };
+
+function adjustTeams(delta) {
+  cfg.numTeams = Math.min(20, Math.max(1, cfg.numTeams + delta));
+  document.getElementById('cfg-teams-val').textContent = cfg.numTeams;
+  rebuildTeamInputs();
+}
+
+function adjustTimer(delta) {
+  cfg.minutes = Math.min(30, Math.max(1, cfg.minutes + delta));
+  document.getElementById('cfg-timer-val').textContent = cfg.minutes;
+}
+
+function rebuildTeamInputs() {
   const grid = document.getElementById('teams-grid');
+  const existing = [...grid.querySelectorAll('input')].map(el => el.value);
   grid.innerHTML = '';
-  for (let i = 1; i <= 8; i++) {
+  for (let i = 1; i <= cfg.numTeams; i++) {
     const row = document.createElement('div');
     row.className = 'team-row';
     row.innerHTML = `<span class="team-num">${i}</span><input type="text" id="ti-${i}" placeholder="Team ${i}" autocomplete="off">`;
     grid.appendChild(row);
+    if (existing[i - 1]) document.getElementById(`ti-${i}`).value = existing[i - 1];
   }
+}
+
+function persist() {
+  const { teams, scores, idx } = st;
+  const phase = document.querySelector('.screen.active')?.id ?? 'screen-setup';
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ teams, scores, idx, phase, cfg }));
+}
+
+function clearPersisted() { localStorage.removeItem(STORAGE_KEY); }
+
+function initSetup() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved?.teams?.length) {
+      if (saved.cfg) Object.assign(cfg, saved.cfg);
+      document.getElementById('cfg-teams-val').textContent = cfg.numTeams;
+      document.getElementById('cfg-timer-val').textContent = cfg.minutes;
+      rebuildTeamInputs();
+      saved.teams.forEach((name, i) => { const el = document.getElementById(`ti-${i+1}`); if (el) el.value = name; });
+      const scored = saved.scores.filter(s => Object.values(s).some(v => v !== null && v !== '')).length;
+      document.getElementById('resume-label').textContent =
+        `${saved.teams[saved.idx] || `Team ${saved.idx+1}`} — ${scored} of ${saved.teams.length} teams scored`;
+      document.getElementById('resume-banner').style.display = 'flex';
+      return;
+    }
+  } catch {}
+  rebuildTeamInputs();
+}
+
+function resumeSession() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (!saved?.teams?.length) return;
+    if (saved.cfg) Object.assign(cfg, saved.cfg);
+    Object.assign(st, { teams: saved.teams, scores: saved.scores, idx: saved.idx, timeLeft: duration() });
+    if (saved.phase === 'screen-summary') { show('screen-summary'); showSummary(); }
+    else { show('screen-judging'); renderJudging(); resetTimer(); }
+  } catch { discardSession(); }
+}
+
+function discardSession() {
+  clearPersisted();
+  document.getElementById('resume-banner').style.display = 'none';
 }
 
 function startJudging() {
   st.teams = [];
-  for (let i = 1; i <= 8; i++) {
+  for (let i = 1; i <= cfg.numTeams; i++) {
     const v = document.getElementById(`ti-${i}`).value.trim();
     st.teams.push(v || `Team ${i}`);
   }
   st.scores = st.teams.map(() => ({ execution: null, difficulty: null, ai: null, ambition: null, presentation: null, notes: '' }));
   st.idx = 0;
+  st.timeLeft = duration();
   show('screen-judging');
   renderJudging();
   resetTimer();
+  persist();
 }
 
 function renderJudging() {
   const { idx, teams, scores } = st;
   const s = scores[idx];
   document.getElementById('team-name').textContent    = teams[idx];
-  document.getElementById('team-counter').textContent = `Team ${idx + 1} of ${teams.length}`;
-  document.getElementById('btn-next').textContent     = idx === teams.length - 1 ? 'Finish ✓' : 'Next →';
+  document.getElementById('team-counter').textContent = `Team ${idx+1} of ${teams.length}`;
+  document.getElementById('btn-next').textContent     = idx === teams.length-1 ? 'Finish ✓' : 'Next →';
   document.getElementById('btn-back').style.display   = idx === 0 ? 'none' : '';
   const container = document.getElementById('criteria-container');
   container.innerHTML = '';
@@ -431,8 +580,8 @@ function renderJudging() {
   refreshTotal();
 }
 
-function setScore(id, v) { st.scores[st.idx][id] = v; renderJudging(); }
-function saveNotes() { st.scores[st.idx].notes = document.getElementById('notes').value; }
+function setScore(id, v) { st.scores[st.idx][id] = v; renderJudging(); persist(); }
+function saveNotes() { st.scores[st.idx].notes = document.getElementById('notes').value; persist(); }
 
 function refreshTotal() {
   const s = st.scores[st.idx];
@@ -457,13 +606,13 @@ function nextTeam() {
     return;
   }
   stopTimer();
-  if (st.idx === st.teams.length - 1) { showSummary(); }
-  else { st.idx++; renderJudging(); resetTimer(); }
+  if (st.idx === st.teams.length - 1) { showSummary(); persist(); }
+  else { st.idx++; renderJudging(); resetTimer(); persist(); }
 }
 
 function prevTeam() {
   if (st.idx === 0) return;
-  saveNotes(); stopTimer(); st.idx--; renderJudging(); resetTimer();
+  saveNotes(); stopTimer(); st.idx--; renderJudging(); resetTimer(); persist();
 }
 
 function startTimer() {
@@ -478,7 +627,8 @@ function stopTimer() {
 }
 
 function toggleTimer() { st.running ? stopTimer() : startTimer(); }
-function resetTimer() { stopTimer(); st.timeLeft = DURATION; tickDisplay(); startTimer(); }
+
+function resetTimer() { stopTimer(); st.timeLeft = duration(); tickDisplay(); startTimer(); }
 
 function tickDisplay() {
   const m = Math.floor(st.timeLeft / 60);
@@ -486,7 +636,7 @@ function tickDisplay() {
   const el = document.getElementById('timer-digits');
   el.textContent = `${m}:${String(s).padStart(2, '0')}`;
   el.className = 'timer-digits' + (st.timeLeft <= 60 ? ' crit' : st.timeLeft <= 120 ? ' warn' : '');
-  const pct = (st.timeLeft / DURATION) * 100;
+  const pct = (st.timeLeft / duration()) * 100;
   const fill = document.getElementById('progress-fill');
   fill.style.width = pct + '%';
   fill.style.background = st.timeLeft <= 60 ? 'var(--danger)' : st.timeLeft <= 120 ? 'var(--warning)' : 'var(--accent)';
@@ -500,8 +650,8 @@ function showSummary() {
   let html = `<table><thead><tr><th>Team</th><th>Exec</th><th>Diff</th><th>AI Prof</th><th>Ambition</th><th>Pres</th><th>Total</th></tr></thead><tbody>`;
   teams.forEach((name, i) => {
     const s = scores[i]; const total = totals[i];
-    const fmt = (v, id) => { if (v === null) return '—'; if (id === 'ai' && v < 0) return v; if ((id === 'ambition' || id === 'presentation') && v > 0) return `+${v}`; return v; };
-    html += `<tr${total === maxTotal ? ' class="top-score"' : ''}><td>${name}</td><td>${fmt(s.execution,'execution')}</td><td>${fmt(s.difficulty,'difficulty')}</td><td>${fmt(s.ai,'ai')}</td><td>${fmt(s.ambition,'ambition')}</td><td>${fmt(s.presentation,'presentation')}</td><td class="total-cell">${total}</td></tr>`;
+    const fmt = (v, id) => { if (v === null) return '—'; if (id === 'ai' && v < 0) return v; if ((id==='ambition'||id==='presentation') && v > 0) return `+${v}`; return v; };
+    html += `<tr${total===maxTotal?' class="top-score"':''}><td>${name}</td><td>${fmt(s.execution,'execution')}</td><td>${fmt(s.difficulty,'difficulty')}</td><td>${fmt(s.ai,'ai')}</td><td>${fmt(s.ambition,'ambition')}</td><td>${fmt(s.presentation,'presentation')}</td><td class="total-cell">${total}</td></tr>`;
     if (s.notes.trim()) html += `<tr class="notes-row"><td colspan="7">Notes: ${escHtml(s.notes.trim())}</td></tr>`;
   });
   html += '</tbody></table>';
@@ -510,16 +660,11 @@ function showSummary() {
 
 function buildResultsText() {
   const { teams, scores } = st;
-  const fmt = (v, id) => {
-    if (v === null) return '—';
-    if (id === 'ai' && v < 0) return v;
-    if ((id === 'ambition' || id === 'presentation') && v > 0) return `+${v}`;
-    return v;
-  };
+  const fmt = (v, id) => { if (v === null) return '—'; if (id==='ai' && v<0) return v; if ((id==='ambition'||id==='presentation') && v>0) return `+${v}`; return v; };
   const header = ['Team','Execution','Difficulty','AI Prof','Ambition','Presentation','Total'];
   const rows = teams.map((name, i) => {
     const s = scores[i];
-    const total = CRITERIA.every(c => s[c.id] !== null) ? CRITERIA.reduce((sum, c) => sum + s[c.id], 0) : '—';
+    const total = CRITERIA.every(c => s[c.id] !== null) ? CRITERIA.reduce((sum,c) => sum+s[c.id], 0) : '—';
     return [name, fmt(s.execution,'execution'), fmt(s.difficulty,'difficulty'), fmt(s.ai,'ai'), fmt(s.ambition,'ambition'), fmt(s.presentation,'presentation'), total].join('\t');
   });
   return [header.join('\t'), ...rows].join('\n');
@@ -544,8 +689,11 @@ function copyResults() {
 
 function restart() {
   stopTimer();
-  Object.assign(st, { teams: [], scores: [], idx: 0, timeLeft: DURATION, running: false, iv: null });
+  clearPersisted();
+  Object.assign(cfg, { numTeams: 8, minutes: 6 });
+  Object.assign(st, { teams: [], scores: [], idx: 0, timeLeft: duration(), running: false, iv: null });
   show('screen-setup');
+  initSetup();
 }
 
 function show(id) {
