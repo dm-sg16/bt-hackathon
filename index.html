@@ -857,7 +857,8 @@ function copyResults() {
 function restart() {
   stopTimer();
   clearPersisted();
-  Object.assign(st, { teams: [], scores: [], idx: 0, timeLeft: DURATION, running: false, iv: null });
+  Object.assign(cfg, { numTeams: 8, minutes: 6 });
+  Object.assign(st, { teams: [], scores: [], idx: 0, timeLeft: duration(), running: false, iv: null });
   show('screen-setup');
   initSetup();
 }
