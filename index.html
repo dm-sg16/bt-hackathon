@@ -259,12 +259,12 @@
   <div id="criteria-container"></div>
   <div class="notes-wrap">
     <div class="notes-field">
-      <span class="notes-label pos">+ Positive</span>
-      <textarea id="notes-pos" rows="2" placeholder="What worked well…" oninput="saveNotes()"></textarea>
+      <span class="notes-label pos">+ What we loved</span>
+      <textarea id="notes-pos" rows="2" placeholder="What we loved…" oninput="saveNotes()"></textarea>
     </div>
     <div class="notes-field">
-      <span class="notes-label con">△ Constructive</span>
-      <textarea id="notes-con" rows="2" placeholder="What could be improved…" oninput="saveNotes()"></textarea>
+      <span class="notes-label con">△ Suggestions</span>
+      <textarea id="notes-con" rows="2" placeholder="Suggestions…" oninput="saveNotes()"></textarea>
     </div>
   </div>
   <div class="bottom-bar">
@@ -474,7 +474,7 @@ function showSummary() {
 function buildResultsText() {
   const { teams, scores } = st;
   const fmt = (v, id) => { if (v===null) return '—'; if (id==='ai'&&v<0) return v; if ((id==='ambition'||id==='presentation')&&v>0) return `+${v}`; return v; };
-  const header = ['Team','Execution','Difficulty','AI Prof','Ambition','Presentation','Total','Positive','Constructive'];
+  const header = ['Team','Execution','Difficulty','AI Prof','Ambition','Presentation','Total','What we loved','Suggestions'];
   const rows = teams.map((name, i) => {
     const s = scores[i];
     const total = CRITERIA.every(c => s[c.id] !== null) ? CRITERIA.reduce((sum,c) => sum+s[c.id], 0) : '—';
