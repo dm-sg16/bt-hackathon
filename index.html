@@ -196,13 +196,31 @@
     .score-btn.sel-zero { border-color: #475569;         background: #475569;            color: #fff; }
     .score-btn.sel-neg  { border-color: var(--danger);  background: var(--danger-dim);  color: var(--danger); font-weight: 700; }
 
+    .notes-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .notes-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .notes-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .notes-label.pos { color: var(--success); }
+    .notes-label.con { color: var(--warning); }
     .notes-wrap textarea {
       width: 100%;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       color: var(--text);
-      padding: 10px 13px;
+      padding: 9px 12px;
       font-size: 0.9rem;
       font-family: inherit;
       resize: none;
@@ -443,7 +461,14 @@
   <div id="criteria-container"></div>
 
   <div class="notes-wrap">
-    <textarea id="notes" rows="2" placeholder="Notes (optional)…" oninput="saveNotes()"></textarea>
+    <div class="notes-field">
+      <span class="notes-label pos">+ What we loved</span>
+      <textarea id="notes-pos" rows="2" placeholder="What we loved…" oninput="saveNotes()"></textarea>
+    </div>
+    <div class="notes-field">
+      <span class="notes-label con">△ Suggestions</span>
+      <textarea id="notes-con" rows="2" placeholder="Suggestions…" oninput="saveNotes()"></textarea>
+    </div>
   </div>
 
   <div class="bottom-bar">
@@ -615,7 +640,7 @@ function startJudging() {
     st.teams.push(v || `Team ${i}`);
   }
   st.scores = st.teams.map(() =>
-    ({ execution: null, difficulty: null, ai: null, ambition: null, presentation: null, notes: '' })
+    ({ execution: null, difficulty: null, ai: null, ambition: null, presentation: null, notesPos: '', notesCon: '' })
   );
   st.idx = 0;
   st.timeLeft = duration();
@@ -658,7 +683,8 @@ function renderJudging() {
     container.appendChild(card);
   });
 
-  document.getElementById('notes').value = s.notes;
+  document.getElementById('notes-pos').value = s.notesPos ?? '';
+  document.getElementById('notes-con').value = s.notesCon ?? '';
   refreshTotal();
 }
 
@@ -669,7 +695,8 @@ function setScore(id, v) {
 }
 
 function saveNotes() {
-  st.scores[st.idx].notes = document.getElementById('notes').value;
+  st.scores[st.idx].notesPos = document.getElementById('notes-pos').value;
+  st.scores[st.idx].notesCon = document.getElementById('notes-con').value;
   persist();
 }
 
@@ -808,9 +835,10 @@ function showSummary() {
       <td>${fmt(s.presentation,'presentation')}</td>
       <td class="total-cell">${total}</td>
     </tr>`;
-    if (s.notes.trim()) {
-      html += `<tr class="notes-row"><td colspan="7">Notes: ${escHtml(s.notes.trim())}</td></tr>`;
-    }
+    if ((s.notesPos ?? s.notes ?? '').trim())
+      html += `<tr class="notes-row"><td colspan="7">+ ${escHtml((s.notesPos ?? s.notes ?? '').trim())}</td></tr>`;
+    if ((s.notesCon ?? '').trim())
+      html += `<tr class="notes-row"><td colspan="7">△ ${escHtml(s.notesCon.trim())}</td></tr>`;
   });
 
   html += '</tbody></table>';
@@ -825,14 +853,16 @@ function buildResultsText() {
     if ((id === 'ambition' || id === 'presentation') && v > 0) return `+${v}`;
     return v;
   };
-  const header = ['Team', 'Execution', 'Difficulty', 'AI Prof', 'Ambition', 'Presentation', 'Total'];
+  const header = ['Team', 'Execution', 'Difficulty', 'AI Prof', 'Ambition', 'Presentation', 'Total', 'What we loved', 'Suggestions'];
   const rows = teams.map((name, i) => {
     const s = scores[i];
     const total = CRITERIA.every(c => s[c.id] !== null)
       ? CRITERIA.reduce((sum, c) => sum + s[c.id], 0)
       : '—';
+    const pos = (s.notesPos ?? s.notes ?? '').trim();
+    const con = (s.notesCon ?? '').trim();
     return [name, fmt(s.execution,'execution'), fmt(s.difficulty,'difficulty'),
-            fmt(s.ai,'ai'), fmt(s.ambition,'ambition'), fmt(s.presentation,'presentation'), total].join('\t');
+            fmt(s.ai,'ai'), fmt(s.ambition,'ambition'), fmt(s.presentation,'presentation'), total, pos, con].join('\t');
   });
   return [header.join('\t'), ...rows].join('\n');
 }
