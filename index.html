@@ -38,160 +38,365 @@
     .screen { display: none; width: 100%; max-width: 680px; flex-direction: column; gap: 14px; }
     .screen.active { display: flex; }
 
+    /* ── Setup ── */
     .setup-header { text-align: center; padding: 8px 0 4px; }
     .setup-header h1 { font-size: 1.6rem; font-weight: 700; }
     .setup-header p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
 
-    .teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .teams-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
 
     .team-row {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--surface); border-radius: var(--radius);
-      padding: 10px 12px; border: 1px solid var(--border); transition: border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      transition: border-color 0.15s;
     }
     .team-row:focus-within { border-color: var(--accent); }
-    .team-num { color: var(--muted); font-size: 0.8rem; font-weight: 600; min-width: 18px; }
-    .team-row input { background: none; border: none; color: var(--text); font-size: 0.95rem; width: 100%; outline: none; }
+
+    .team-num {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      min-width: 18px;
+    }
+
+    .team-row input {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 0.95rem;
+      width: 100%;
+      outline: none;
+    }
     .team-row input::placeholder { color: var(--muted); }
 
     .btn-start {
-      background: var(--accent); color: white; border: none; border-radius: var(--radius);
-      padding: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; width: 100%;
-      letter-spacing: 0.3px; transition: filter 0.15s;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      letter-spacing: 0.3px;
+      transition: filter 0.15s;
     }
     .btn-start:hover { filter: brightness(1.12); }
 
+    /* ── Judging ── */
     .top-bar {
-      display: flex; align-items: center; gap: 12px;
-      background: var(--surface); border-radius: var(--radius); padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 12px 16px;
     }
+
     .timer-block { flex: 0 0 auto; }
-    .timer-digits { font-size: 2.2rem; font-weight: 700; letter-spacing: 2px; font-variant-numeric: tabular-nums; line-height: 1; }
-    .timer-digits.warn { color: var(--warning); }
-    .timer-digits.crit { color: var(--danger); animation: pulse 1s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+    .timer-digits {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .timer-digits.warn  { color: var(--warning); }
+    .timer-digits.crit  { color: var(--danger); animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
+
     .timer-label { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
-    .progress-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--accent); transition: width 1s linear, background 0.4s; border-radius: 3px; }
+
+    .progress-wrap {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 1s linear, background 0.4s;
+      border-radius: 3px;
+    }
+
     .timer-controls { display: flex; gap: 6px; flex: 0 0 auto; }
     .ctrl-btn {
-      background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
-      color: var(--muted); padding: 5px 10px; font-size: 0.8rem; cursor: pointer; transition: all 0.12s;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.12s;
     }
     .ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    .team-badge { text-align: center; padding: 2px 0; }
+    .team-badge {
+      text-align: center;
+      padding: 2px 0;
+    }
     .team-badge .name { font-size: 1.9rem; font-weight: 700; line-height: 1.15; }
     .team-badge .counter { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
 
+    /* Criteria cards */
     .criterion {
-      background: var(--surface); border-radius: var(--radius);
-      padding: 13px 14px; border: 1px solid transparent; transition: border-color 0.15s;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      border: 1px solid transparent;
+      transition: border-color 0.15s;
     }
     .criterion.scored { border-color: var(--border); }
-    .crit-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+
+    .crit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
     .crit-name { font-weight: 600; font-size: 0.95rem; }
     .crit-range { font-size: 0.75rem; color: var(--muted); }
+
     .score-row { display: flex; gap: 7px; }
+
     .score-btn {
-      flex: 1; padding: 10px 2px; border: 2px solid var(--border); border-radius: 8px;
-      background: var(--surface2); color: var(--text); font-size: 1rem; font-weight: 600;
-      cursor: pointer; text-align: center; transition: all 0.12s; user-select: none;
+      flex: 1;
+      padding: 10px 2px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.12s;
+      user-select: none;
     }
     .score-btn:hover { border-color: var(--accent); background: var(--accent-dim); }
-    .score-btn.sel-pos  { border-color: var(--accent); background: var(--accent); color: #fff; }
-    .score-btn.sel-zero { border-color: #475569; background: #475569; color: #fff; }
-    .score-btn.sel-neg  { border-color: var(--danger); background: var(--danger-dim); color: var(--danger); font-weight: 700; }
+    .score-btn.sel-pos  { border-color: var(--accent);  background: var(--accent);      color: #fff; }
+    .score-btn.sel-zero { border-color: #475569;         background: #475569;            color: #fff; }
+    .score-btn.sel-neg  { border-color: var(--danger);  background: var(--danger-dim);  color: var(--danger); font-weight: 700; }
 
-    .notes-wrap { display: flex; flex-direction: column; gap: 8px; }
-    .notes-field { display: flex; flex-direction: column; gap: 4px; }
-    .notes-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; }
+    .notes-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .notes-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .notes-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
     .notes-label.pos { color: var(--success); }
     .notes-label.con { color: var(--warning); }
     .notes-wrap textarea {
-      width: 100%; background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); color: var(--text); padding: 9px 12px;
-      font-size: 0.9rem; font-family: inherit; resize: none; outline: none; transition: border-color 0.15s;
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      padding: 9px 12px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      transition: border-color 0.15s;
     }
     .notes-wrap textarea:focus { border-color: var(--accent); }
 
     .bottom-bar {
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--surface); border-radius: var(--radius); padding: 13px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 13px 16px;
     }
+
+    .score-summary { }
     .score-summary .label { font-size: 0.75rem; color: var(--muted); }
     .score-summary .value { font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
+
     .nav-btns { display: flex; gap: 8px; align-items: center; }
+
     .warn-msg { font-size: 0.8rem; color: var(--warning); }
+
     .btn-back {
-      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
-      color: var(--muted); padding: 10px 16px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.12s;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
     }
     .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+
     .btn-next {
-      background: var(--success); border: none; border-radius: var(--radius);
-      color: white; padding: 11px 22px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: filter 0.12s;
+      background: var(--success);
+      border: none;
+      border-radius: var(--radius);
+      color: white;
+      padding: 11px 22px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: filter 0.12s;
     }
     .btn-next:hover { filter: brightness(1.1); }
 
+    /* ── Summary ── */
     .summary-header { text-align: center; }
     .summary-header h1 { font-size: 1.5rem; font-weight: 700; }
-    .summary-header p { color: var(--muted); font-size: 0.85rem; margin-top: 3px; }
+    .summary-header p  { color: var(--muted); font-size: 0.85rem; margin-top: 3px; }
+
     .tbl-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+
     table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
     th {
-      background: var(--surface2); padding: 9px 10px; text-align: center;
-      font-weight: 600; color: var(--muted); white-space: nowrap; border-bottom: 2px solid var(--border);
+      background: var(--surface2);
+      padding: 9px 10px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--muted);
+      white-space: nowrap;
+      border-bottom: 2px solid var(--border);
     }
     th:first-child { text-align: left; padding-left: 14px; }
     td { padding: 9px 10px; text-align: center; border-bottom: 1px solid var(--border); }
-    td:first-child { text-align: left; padding-left: 14px; font-weight: 500; }
+    td:first-child {
+      text-align: left;
+      padding-left: 14px;
+      font-weight: 500;
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     tr:last-child td { border-bottom: none; }
     tr.top-score td { background: var(--green-dim); }
     .total-cell { font-weight: 700; color: var(--accent); font-size: 1rem; }
-    .notes-row td { padding: 2px 14px 8px; font-size: 0.78rem; color: var(--muted); text-align: left; }
+    .notes-row td { padding: 2px 14px 8px; font-size: 0.78rem; color: var(--muted); text-align: left; white-space: normal; overflow: visible; }
+
     .summary-actions { display: flex; flex-direction: column; gap: 10px; }
+
     .btn-copy {
-      background: var(--accent); color: white; border: none; border-radius: var(--radius);
-      padding: 13px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; transition: filter 0.15s;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 13px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: filter 0.15s;
     }
     .btn-copy:hover { filter: brightness(1.1); }
+
     .btn-restart {
-      background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 11px; font-size: 0.9rem; font-weight: 600;
-      cursor: pointer; width: 100%; transition: all 0.12s;
+      background: var(--surface2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.12s;
     }
     .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
 
-    .setup-config { display: flex; gap: 10px; }
+    .setup-config {
+      display: flex;
+      gap: 10px;
+    }
     .config-row {
-      flex: 1; display: flex; justify-content: space-between; align-items: center;
-      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px;
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
     }
     .config-label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
     .config-stepper { display: flex; align-items: center; gap: 10px; }
     .step-btn {
-      width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px;
-      background: var(--surface2); color: var(--text); font-size: 1.1rem; line-height: 1;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.12s;
+      width: 28px; height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.12s;
     }
     .step-btn:hover { border-color: var(--accent); color: var(--accent); }
     .step-val { font-size: 1.1rem; font-weight: 700; min-width: 20px; text-align: center; }
 
     .resume-banner {
-      background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius);
-      padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
     }
     .resume-banner p { font-size: 0.9rem; color: var(--text); }
     .resume-banner p span { color: var(--accent); font-weight: 600; }
     .resume-btns { display: flex; gap: 8px; flex-shrink: 0; }
     .btn-resume {
-      background: var(--accent); color: white; border: none; border-radius: 6px;
-      padding: 7px 14px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
     }
     .btn-discard {
-      background: none; color: var(--muted); border: 1px solid var(--border);
-      border-radius: 6px; padding: 7px 14px; font-size: 0.85rem; cursor: pointer;
+      background: none;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      cursor: pointer;
     }
 
     @media (max-width: 500px) {
@@ -199,11 +404,18 @@
       .timer-digits { font-size: 1.8rem; }
       .team-badge .name { font-size: 1.4rem; }
       .score-btn { font-size: 0.9rem; }
+      table { font-size: 0.78rem; }
+      th, td { padding: 7px 4px; }
+      th:first-child { padding-left: 8px; }
+      td:first-child { padding-left: 8px; max-width: 80px; }
+      .total-cell { font-size: 0.9rem; }
+      .notes-row td { padding: 2px 8px 7px; font-size: 0.72rem; }
     }
   </style>
 </head>
 <body>
 
+<!-- ══ SETUP ══ -->
 <div class="screen active" id="screen-setup">
   <div class="setup-header">
     <h1>BT Hackathon 2026</h1>
@@ -218,7 +430,7 @@
   </div>
   <div class="setup-config">
     <div class="config-row">
-      <label class="config-label">Teams</label>
+      <label class="config-label" for="cfg-teams">Teams</label>
       <div class="config-stepper">
         <button class="step-btn" onclick="adjustTeams(-1)">−</button>
         <span class="step-val" id="cfg-teams-val">8</span>
@@ -226,7 +438,7 @@
       </div>
     </div>
     <div class="config-row">
-      <label class="config-label">Minutes per team</label>
+      <label class="config-label" for="cfg-timer">Minutes per team</label>
       <div class="config-stepper">
         <button class="step-btn" onclick="adjustTimer(-1)">−</button>
         <span class="step-val" id="cfg-timer-val">6</span>
@@ -238,7 +450,9 @@
   <button class="btn-start" onclick="startJudging()">Start Judging →</button>
 </div>
 
+<!-- ══ JUDGING ══ -->
 <div class="screen" id="screen-judging">
+
   <div class="top-bar">
     <div class="timer-block">
       <div class="timer-digits" id="timer-digits">6:00</div>
@@ -252,11 +466,14 @@
       </div>
     </div>
   </div>
+
   <div class="team-badge">
     <div class="name" id="team-name"></div>
     <div class="counter" id="team-counter"></div>
   </div>
+
   <div id="criteria-container"></div>
+
   <div class="notes-wrap">
     <div class="notes-field">
       <span class="notes-label pos">+ What we loved</span>
@@ -267,6 +484,7 @@
       <textarea id="notes-con" rows="2" placeholder="Suggestions…" oninput="saveNotes()"></textarea>
     </div>
   </div>
+
   <div class="bottom-bar">
     <div class="score-summary">
       <div class="label">Score</div>
@@ -281,6 +499,7 @@
   </div>
 </div>
 
+<!-- ══ SUMMARY ══ -->
 <div class="screen" id="screen-summary">
   <div class="summary-header">
     <h1>Results</h1>
@@ -295,27 +514,69 @@
 
 <script>
 const CRITERIA = [
-  { id: 'execution',    label: 'Execution',          range: '0 – 4',    values: [0,1,2,3,4], displays: ['0','1','2','3','4'] },
-  { id: 'difficulty',  label: 'Level of Difficulty', range: '0 – 4',    values: [0,1,2,3,4], displays: ['0','1','2','3','4'] },
-  { id: 'ai',          label: 'AI Proficiency',      range: '0 to −2', values: [0,-1,-2],   displays: ['0','−1','−2'] },
-  { id: 'ambition',    label: 'Ambition',             range: '0 to +2',  values: [0,1,2],     displays: ['0','+1','+2'] },
-  { id: 'presentation',label: 'Presentation',         range: '0 to +1',  values: [0,1],       displays: ['0','+1'] },
+  {
+    id: 'execution',
+    label: 'Execution',
+    range: '0 – 4',
+    values:   [0, 1, 2, 3, 4],
+    displays: ['0', '1', '2', '3', '4'],
+  },
+  {
+    id: 'difficulty',
+    label: 'Level of Difficulty',
+    range: '0 – 4',
+    values:   [0, 1, 2, 3, 4],
+    displays: ['0', '1', '2', '3', '4'],
+  },
+  {
+    id: 'ai',
+    label: 'AI Proficiency',
+    range: '0 to −2',
+    values:   [0, -1, -2],
+    displays: ['0', '−1', '−2'],
+  },
+  {
+    id: 'ambition',
+    label: 'Ambition',
+    range: '0 to +2',
+    values:   [0, 1, 2],
+    displays: ['0', '+1', '+2'],
+  },
+  {
+    id: 'presentation',
+    label: 'Presentation',
+    range: '0 to +1',
+    values:   [0, 1],
+    displays: ['0', '+1'],
+  },
 ];
 
 const STORAGE_KEY = 'bt-hackathon-2026';
+
 const cfg = { numTeams: 8, minutes: 6 };
+
 function duration() { return cfg.minutes * 60; }
-const st = { teams: [], scores: [], idx: 0, timeLeft: duration(), running: false, iv: null };
+
+const st = {
+  teams:    [],
+  scores:   [],
+  idx:      0,
+  timeLeft: duration(),
+  running:  false,
+  iv:       null,
+};
 
 function adjustTeams(delta) {
   cfg.numTeams = Math.min(20, Math.max(1, cfg.numTeams + delta));
   document.getElementById('cfg-teams-val').textContent = cfg.numTeams;
   rebuildTeamInputs();
 }
+
 function adjustTimer(delta) {
   cfg.minutes = Math.min(30, Math.max(1, cfg.minutes + delta));
   document.getElementById('cfg-timer-val').textContent = cfg.minutes;
 }
+
 function rebuildTeamInputs() {
   const grid = document.getElementById('teams-grid');
   const existing = [...grid.querySelectorAll('input')].map(el => el.value);
@@ -323,189 +584,340 @@ function rebuildTeamInputs() {
   for (let i = 1; i <= cfg.numTeams; i++) {
     const row = document.createElement('div');
     row.className = 'team-row';
-    row.innerHTML = `<span class="team-num">${i}</span><input type="text" id="ti-${i}" placeholder="Team ${i}" autocomplete="off">`;
+    row.innerHTML = `<span class="team-num">${i}</span>
+      <input type="text" id="ti-${i}" placeholder="Team ${i}" autocomplete="off">`;
     grid.appendChild(row);
-    if (existing[i-1]) document.getElementById(`ti-${i}`).value = existing[i-1];
+    if (existing[i - 1]) document.getElementById(`ti-${i}`).value = existing[i - 1];
   }
 }
+
 function persist() {
   const { teams, scores, idx } = st;
   const phase = document.querySelector('.screen.active')?.id ?? 'screen-setup';
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ teams, scores, idx, phase, cfg }));
 }
-function clearPersisted() { localStorage.removeItem(STORAGE_KEY); }
+
+function clearPersisted() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+// ── Setup ────────────────────────────────────────────────────────────────────────────
 
 function initSetup() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (saved?.teams?.length) {
-      if (saved.cfg) Object.assign(cfg, saved.cfg);
+      if (saved.cfg) { Object.assign(cfg, saved.cfg); }
       document.getElementById('cfg-teams-val').textContent = cfg.numTeams;
       document.getElementById('cfg-timer-val').textContent = cfg.minutes;
       rebuildTeamInputs();
-      saved.teams.forEach((name, i) => { const el = document.getElementById(`ti-${i+1}`); if (el) el.value = name; });
+      saved.teams.forEach((name, i) => {
+        const el = document.getElementById(`ti-${i + 1}`);
+        if (el) el.value = name;
+      });
       const scored = saved.scores.filter(s => Object.values(s).some(v => v !== null && v !== '')).length;
       document.getElementById('resume-label').textContent =
-        `${saved.teams[saved.idx] || `Team ${saved.idx+1}`} — ${scored} of ${saved.teams.length} teams scored`;
+        `${saved.teams[saved.idx] || `Team ${saved.idx + 1}`} — ${scored} of ${saved.teams.length} teams scored`;
       document.getElementById('resume-banner').style.display = 'flex';
       return;
     }
-  } catch {}
+  } catch { /* ignore corrupt data */ }
   rebuildTeamInputs();
 }
+
 function resumeSession() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved?.teams?.length) return;
     if (saved.cfg) Object.assign(cfg, saved.cfg);
     Object.assign(st, { teams: saved.teams, scores: saved.scores, idx: saved.idx, timeLeft: duration() });
-    if (saved.phase === 'screen-summary') { show('screen-summary'); showSummary(); }
-    else { show('screen-judging'); renderJudging(); resetTimer(); }
+    if (saved.phase === 'screen-summary') {
+      show('screen-summary');
+      showSummary();
+    } else {
+      show('screen-judging');
+      renderJudging();
+      resetTimer();
+    }
   } catch { discardSession(); }
 }
+
 function discardSession() {
   clearPersisted();
   document.getElementById('resume-banner').style.display = 'none';
 }
+
 function startJudging() {
   st.teams = [];
   for (let i = 1; i <= cfg.numTeams; i++) {
     const v = document.getElementById(`ti-${i}`).value.trim();
     st.teams.push(v || `Team ${i}`);
   }
-  st.scores = st.teams.map(() => ({ execution: null, difficulty: null, ai: null, ambition: null, presentation: null, notesPos: '', notesCon: '' }));
-  st.idx = 0; st.timeLeft = duration();
-  show('screen-judging'); renderJudging(); resetTimer(); persist();
+  st.scores = st.teams.map(() =>
+    ({ execution: null, difficulty: null, ai: null, ambition: null, presentation: null, notesPos: '', notesCon: '' })
+  );
+  st.idx = 0;
+  st.timeLeft = duration();
+  show('screen-judging');
+  renderJudging();
+  resetTimer();
+  persist();
 }
+
+// ── Judging ──────────────────────────────────────────────────────────────────────────
+
 function renderJudging() {
   const { idx, teams, scores } = st;
   const s = scores[idx];
+
   document.getElementById('team-name').textContent    = teams[idx];
-  document.getElementById('team-counter').textContent = `Team ${idx+1} of ${teams.length}`;
-  document.getElementById('btn-next').textContent     = idx === teams.length-1 ? 'Finish ✓' : 'Next →';
+  document.getElementById('team-counter').textContent = `Team ${idx + 1} of ${teams.length}`;
+  document.getElementById('btn-next').textContent     = idx === teams.length - 1 ? 'Finish ✓' : 'Next →';
   document.getElementById('btn-back').style.display   = idx === 0 ? 'none' : '';
+
   const container = document.getElementById('criteria-container');
   container.innerHTML = '';
+
   CRITERIA.forEach(c => {
     const card = document.createElement('div');
     card.className = `criterion${s[c.id] !== null ? ' scored' : ''}`;
+
     const btns = c.values.map((v, bi) => {
       let cls = 'score-btn';
       if (s[c.id] === v) cls += v > 0 ? ' sel-pos' : v < 0 ? ' sel-neg' : ' sel-zero';
       return `<button class="${cls}" onclick="setScore('${c.id}',${v})">${c.displays[bi]}</button>`;
     }).join('');
-    card.innerHTML = `<div class="crit-header"><span class="crit-name">${c.label}</span><span class="crit-range">${c.range}</span></div><div class="score-row">${btns}</div>`;
+
+    card.innerHTML = `
+      <div class="crit-header">
+        <span class="crit-name">${c.label}</span>
+        <span class="crit-range">${c.range}</span>
+      </div>
+      <div class="score-row">${btns}</div>`;
     container.appendChild(card);
   });
+
   document.getElementById('notes-pos').value = s.notesPos ?? '';
   document.getElementById('notes-con').value = s.notesCon ?? '';
   refreshTotal();
 }
-function setScore(id, v) { st.scores[st.idx][id] = v; renderJudging(); persist(); }
+
+function setScore(id, v) {
+  st.scores[st.idx][id] = v;
+  renderJudging();
+  persist();
+}
+
 function saveNotes() {
   st.scores[st.idx].notesPos = document.getElementById('notes-pos').value;
   st.scores[st.idx].notesCon = document.getElementById('notes-con').value;
   persist();
 }
+
 function refreshTotal() {
   const s = st.scores[st.idx];
   const vals = CRITERIA.map(c => s[c.id]);
+  const incomplete = vals.some(v => v === null);
   const el = document.getElementById('score-total');
-  if (vals.some(v => v === null)) { el.textContent = '—'; el.style.color = ''; }
-  else {
+  if (incomplete) {
+    el.textContent = '—';
+    el.style.color = '';
+  } else {
     const total = vals.reduce((a, b) => a + b, 0);
     el.textContent = total;
     el.style.color = total >= 8 ? 'var(--success)' : total < 4 ? 'var(--danger)' : 'var(--accent)';
   }
 }
+
 function nextTeam() {
   saveNotes();
   const s = st.scores[st.idx];
   if (CRITERIA.some(c => s[c.id] === null)) {
     const w = document.getElementById('warn-msg');
-    w.style.display = 'inline'; setTimeout(() => w.style.display = 'none', 2200); return;
+    w.style.display = 'inline';
+    setTimeout(() => w.style.display = 'none', 2200);
+    return;
   }
   stopTimer();
-  if (st.idx === st.teams.length-1) { showSummary(); persist(); }
-  else { st.idx++; renderJudging(); resetTimer(); persist(); }
+  if (st.idx === st.teams.length - 1) {
+    showSummary();
+    persist();
+  } else {
+    st.idx++;
+    renderJudging();
+    resetTimer();
+    persist();
+  }
 }
+
 function prevTeam() {
   if (st.idx === 0) return;
-  saveNotes(); stopTimer(); st.idx--; renderJudging(); resetTimer(); persist();
+  saveNotes();
+  stopTimer();
+  st.idx--;
+  renderJudging();
+  resetTimer();
+  persist();
 }
+
+// ── Timer ────────────────────────────────────────────────────────────────────────────
+
 function startTimer() {
-  clearInterval(st.iv); st.running = true;
+  clearInterval(st.iv);
+  st.running = true;
   document.getElementById('btn-pause').textContent = 'Pause';
-  st.iv = setInterval(() => { if (st.timeLeft > 0) { st.timeLeft--; tickDisplay(); } else { stopTimer(); } }, 1000);
+  st.iv = setInterval(() => {
+    if (st.timeLeft > 0) {
+      st.timeLeft--;
+      tickDisplay();
+    } else {
+      stopTimer();
+    }
+  }, 1000);
 }
+
 function stopTimer() {
-  clearInterval(st.iv); st.running = false;
+  clearInterval(st.iv);
+  st.running = false;
   document.getElementById('btn-pause').textContent = 'Resume';
 }
-function toggleTimer() { st.running ? stopTimer() : startTimer(); }
-function resetTimer() { stopTimer(); st.timeLeft = duration(); tickDisplay(); startTimer(); }
-function tickDisplay() {
-  const m = Math.floor(st.timeLeft / 60), s = st.timeLeft % 60;
-  const el = document.getElementById('timer-digits');
-  el.textContent = `${m}:${String(s).padStart(2,'0')}`;
-  el.className = 'timer-digits' + (st.timeLeft <= 60 ? ' crit' : st.timeLeft <= 120 ? ' warn' : '');
-  const fill = document.getElementById('progress-fill');
-  fill.style.width = (st.timeLeft / duration() * 100) + '%';
-  fill.style.background = st.timeLeft <= 60 ? 'var(--danger)' : st.timeLeft <= 120 ? 'var(--warning)' : 'var(--accent)';
+
+function toggleTimer() {
+  st.running ? stopTimer() : startTimer();
 }
+
+function resetTimer() {
+  stopTimer();
+  st.timeLeft = duration();
+  tickDisplay();
+  startTimer();
+}
+
+function tickDisplay() {
+  const m = Math.floor(st.timeLeft / 60);
+  const s = st.timeLeft % 60;
+  const el = document.getElementById('timer-digits');
+  el.textContent = `${m}:${String(s).padStart(2, '0')}`;
+  el.className = 'timer-digits' +
+    (st.timeLeft <= 60 ? ' crit' : st.timeLeft <= 120 ? ' warn' : '');
+
+  const pct = (st.timeLeft / duration()) * 100;
+  const fill = document.getElementById('progress-fill');
+  fill.style.width = pct + '%';
+  fill.style.background = st.timeLeft <= 60 ? 'var(--danger)'
+    : st.timeLeft <= 120 ? 'var(--warning)' : 'var(--accent)';
+}
+
+// ── Summary ──────────────────────────────────────────────────────────────────────────
+
 function showSummary() {
   show('screen-summary');
   const { teams, scores } = st;
-  const totals = scores.map(s => CRITERIA.reduce((sum, c) => sum + (s[c.id] ?? 0), 0));
+
+  const totals = scores.map(s =>
+    CRITERIA.reduce((sum, c) => sum + (s[c.id] ?? 0), 0)
+  );
   const maxTotal = Math.max(...totals);
-  let html = `<table><thead><tr><th>Team</th><th>Exec</th><th>Diff</th><th>AI Prof</th><th>Ambition</th><th>Pres</th><th>Total</th></tr></thead><tbody>`;
+
+  let html = `<table>
+    <thead><tr>
+      <th title="Team">Team</th>
+      <th title="Execution">Exec</th>
+      <th title="Level of Difficulty">Diff</th>
+      <th title="AI Proficiency">AI</th>
+      <th title="Ambition">Amb</th>
+      <th title="Presentation">Pres</th>
+      <th>Total</th>
+    </tr></thead>
+    <tbody>`;
+
   teams.forEach((name, i) => {
-    const s = scores[i], total = totals[i];
-    const fmt = (v, id) => { if (v===null) return '—'; if (id==='ai'&&v<0) return v; if ((id==='ambition'||id==='presentation')&&v>0) return `+${v}`; return v; };
-    html += `<tr${total===maxTotal?' class="top-score"':''}><td>${name}</td><td>${fmt(s.execution,'execution')}</td><td>${fmt(s.difficulty,'difficulty')}</td><td>${fmt(s.ai,'ai')}</td><td>${fmt(s.ambition,'ambition')}</td><td>${fmt(s.presentation,'presentation')}</td><td class="total-cell">${total}</td></tr>`;
-    const pos = (s.notesPos ?? s.notes ?? '').trim();
-    const con = (s.notesCon ?? '').trim();
-    if (pos) html += `<tr class="notes-row"><td colspan="7">+ ${escHtml(pos)}</td></tr>`;
-    if (con) html += `<tr class="notes-row"><td colspan="7">△ ${escHtml(con)}</td></tr>`;
+    const s = scores[i];
+    const total = totals[i];
+    const fmt = (v, id) => {
+      if (v === null) return '—';
+      if (id === 'ai' && v < 0) return v;
+      if ((id === 'ambition' || id === 'presentation') && v > 0) return `+${v}`;
+      return v;
+    };
+    html += `<tr${total === maxTotal ? ' class="top-score"' : ''}>
+      <td title="${escHtml(name)}">${escHtml(name)}</td>
+      <td>${fmt(s.execution,   'execution')}</td>
+      <td>${fmt(s.difficulty,  'difficulty')}</td>
+      <td>${fmt(s.ai,          'ai')}</td>
+      <td>${fmt(s.ambition,    'ambition')}</td>
+      <td>${fmt(s.presentation,'presentation')}</td>
+      <td class="total-cell">${total}</td>
+    </tr>`;
+    if ((s.notesPos ?? s.notes ?? '').trim())
+      html += `<tr class="notes-row"><td colspan="7">+ ${escHtml((s.notesPos ?? s.notes ?? '').trim())}</td></tr>`;
+    if ((s.notesCon ?? '').trim())
+      html += `<tr class="notes-row"><td colspan="7">△ ${escHtml(s.notesCon.trim())}</td></tr>`;
   });
+
   html += '</tbody></table>';
   document.getElementById('summary-table').innerHTML = html;
 }
+
 function buildResultsText() {
   const { teams, scores } = st;
-  const fmt = (v, id) => { if (v===null) return '—'; if (id==='ai'&&v<0) return v; if ((id==='ambition'||id==='presentation')&&v>0) return `+${v}`; return v; };
-  const header = ['Team','Execution','Difficulty','AI Prof','Ambition','Presentation','Total','What we loved','Suggestions'];
+  const fmt = (v, id) => {
+    if (v === null) return '—';
+    if (id === 'ai' && v < 0) return v;
+    if ((id === 'ambition' || id === 'presentation') && v > 0) return `+${v}`;
+    return v;
+  };
+  const header = ['Team', 'Execution', 'Difficulty', 'AI Prof', 'Ambition', 'Presentation', 'Total', 'What we loved', 'Suggestions'];
   const rows = teams.map((name, i) => {
     const s = scores[i];
-    const total = CRITERIA.every(c => s[c.id] !== null) ? CRITERIA.reduce((sum,c) => sum+s[c.id], 0) : '—';
-    return [name, fmt(s.execution,'execution'), fmt(s.difficulty,'difficulty'), fmt(s.ai,'ai'), fmt(s.ambition,'ambition'), fmt(s.presentation,'presentation'), total, (s.notesPos??s.notes??'').trim(), (s.notesCon??'').trim()].join('\t');
+    const total = CRITERIA.every(c => s[c.id] !== null)
+      ? CRITERIA.reduce((sum, c) => sum + s[c.id], 0)
+      : '—';
+    const pos = (s.notesPos ?? s.notes ?? '').trim();
+    const con = (s.notesCon ?? '').trim();
+    return [name, fmt(s.execution,'execution'), fmt(s.difficulty,'difficulty'),
+            fmt(s.ai,'ai'), fmt(s.ambition,'ambition'), fmt(s.presentation,'presentation'), total, pos, con].join('\t');
   });
   return [header.join('\t'), ...rows].join('\n');
 }
+
 function copyProgress() {
   saveNotes();
   navigator.clipboard.writeText(buildResultsText()).then(() => {
     const btn = document.getElementById('btn-copy-progress');
-    btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000);
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
   });
 }
+
 function copyResults() {
   navigator.clipboard.writeText(buildResultsText()).then(() => {
     const btn = document.querySelector('.btn-copy');
-    btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy Results to Clipboard', 2000);
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy Results to Clipboard', 2000);
   });
 }
+
 function restart() {
-  stopTimer(); clearPersisted();
+  stopTimer();
+  clearPersisted();
   Object.assign(cfg, { numTeams: 8, minutes: 6 });
   Object.assign(st, { teams: [], scores: [], idx: 0, timeLeft: duration(), running: false, iv: null });
-  show('screen-setup'); initSetup();
+  show('screen-setup');
+  initSetup();
 }
+
+// ── Helpers ─────────────────────────────────────────────────────────────────────────────
+
 function show(id) {
   document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 initSetup();
 </script>
 </body>
