@@ -291,11 +291,19 @@
     }
     th:first-child { text-align: left; padding-left: 14px; }
     td { padding: 9px 10px; text-align: center; border-bottom: 1px solid var(--border); }
-    td:first-child { text-align: left; padding-left: 14px; font-weight: 500; }
+    td:first-child {
+      text-align: left;
+      padding-left: 14px;
+      font-weight: 500;
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     tr:last-child td { border-bottom: none; }
     tr.top-score td { background: var(--green-dim); }
     .total-cell { font-weight: 700; color: var(--accent); font-size: 1rem; }
-    .notes-row td { padding: 2px 14px 8px; font-size: 0.78rem; color: var(--muted); text-align: left; }
+    .notes-row td { padding: 2px 14px 8px; font-size: 0.78rem; color: var(--muted); text-align: left; white-space: normal; overflow: visible; }
 
     .summary-actions { display: flex; flex-direction: column; gap: 10px; }
 
@@ -396,6 +404,12 @@
       .timer-digits { font-size: 1.8rem; }
       .team-badge .name { font-size: 1.4rem; }
       .score-btn { font-size: 0.9rem; }
+      table { font-size: 0.78rem; }
+      th, td { padding: 7px 4px; }
+      th:first-child { padding-left: 8px; }
+      td:first-child { padding-left: 8px; max-width: 80px; }
+      .total-cell { font-size: 0.9rem; }
+      .notes-row td { padding: 2px 8px 7px; font-size: 0.72rem; }
     }
   </style>
 </head>
@@ -807,12 +821,12 @@ function showSummary() {
 
   let html = `<table>
     <thead><tr>
-      <th>Team</th>
-      <th>Exec</th>
-      <th>Diff</th>
-      <th>AI Prof</th>
-      <th>Ambition</th>
-      <th>Pres</th>
+      <th title="Team">Team</th>
+      <th title="Execution">Exec</th>
+      <th title="Level of Difficulty">Diff</th>
+      <th title="AI Proficiency">AI</th>
+      <th title="Ambition">Amb</th>
+      <th title="Presentation">Pres</th>
       <th>Total</th>
     </tr></thead>
     <tbody>`;
@@ -827,7 +841,7 @@ function showSummary() {
       return v;
     };
     html += `<tr${total === maxTotal ? ' class="top-score"' : ''}>
-      <td>${name}</td>
+      <td title="${escHtml(name)}">${escHtml(name)}</td>
       <td>${fmt(s.execution,   'execution')}</td>
       <td>${fmt(s.difficulty,  'difficulty')}</td>
       <td>${fmt(s.ai,          'ai')}</td>
